@@ -8,25 +8,21 @@ from app.chat.schemas import (
     ConversationResponse, ConversationDetail, ChatMessage
 )
 from app.chat.agents import process_message, AGENT_TYPE_MAPPING
-from app.models import MessageRole, AgentType
+from app.models import MessageRole, AgentType, User
+from app.core.auth import get_current_user_id, get_current_user  # Updated imports
 import json
 
 router = APIRouter()
 
 
-def get_current_user_id():
-    """TODO: Extract from JWT token. For now, return test user ID"""
-    return 1  # We'll implement proper auth later
-
-
 @router.post("/send", response_model=ChatResponse)
 async def send_message(
     chat_request: ChatRequest,
+    user_id: int = Depends(get_current_user_id),  # Now uses real auth
     db: Session = Depends(get_db)
 ):
     """Send a message and get AI response"""
     try:
-        user_id = get_current_user_id()
         service = ChatService(db)
         
         # Get or create conversation
@@ -87,12 +83,13 @@ async def send_message(
 
 
 @router.get("/conversations", response_model=List[ConversationResponse])
-async def get_conversations(db: Session = Depends(get_db)):
+async def get_conversations(
+    user_id: int = Depends(get_current_user_id),  # Now uses real auth
+    db: Session = Depends(get_db)
+):
     """Get all conversations for the current user"""
     try:
-        user_id = get_current_user_id()
         service = ChatService(db)
-        
         conversations = service.get_user_conversations(user_id)
         
         result = []
@@ -115,11 +112,11 @@ async def get_conversations(db: Session = Depends(get_db)):
 @router.get("/conversations/{conversation_id}", response_model=ConversationDetail)
 async def get_conversation(
     conversation_id: int,
+    user_id: int = Depends(get_current_user_id),  # Now uses real auth
     db: Session = Depends(get_db)
 ):
     """Get a specific conversation with all messages"""
     try:
-        user_id = get_current_user_id()
         service = ChatService(db)
         
         conversation = service.get_conversation(conversation_id, user_id)
@@ -152,13 +149,12 @@ async def get_conversation(
 @router.post("/conversations", response_model=ConversationResponse)
 async def create_conversation(
     conversation_data: ConversationCreate,
+    user_id: int = Depends(get_current_user_id),  # Now uses real auth
     db: Session = Depends(get_db)
 ):
     """Create a new conversation"""
     try:
-        user_id = get_current_user_id()
         service = ChatService(db)
-        
         conversation = service.create_conversation(user_id, conversation_data.title)
         
         return ConversationResponse(
@@ -174,7 +170,7 @@ async def create_conversation(
         raise HTTPException(status_code=500, detail="Failed to create conversation")
 
 
-# WebSocket for real-time chat (we'll implement this in Day 2)
+# WebSocket endpoint (unchanged for now)
 @router.websocket("/ws/{conversation_id}")
 async def websocket_endpoint(websocket: WebSocket, conversation_id: int):
     """WebSocket endpoint for real-time chat"""
@@ -182,12 +178,9 @@ async def websocket_endpoint(websocket: WebSocket, conversation_id: int):
     
     try:
         while True:
-            # Receive message from client
             data = await websocket.receive_text()
             message_data = json.loads(data)
             
-            # Process message (similar to send_message endpoint)
-            # For now, just echo back
             response = {
                 "type": "message",
                 "content": f"Echo: {message_data.get('message', '')}",
