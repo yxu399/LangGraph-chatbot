@@ -77,9 +77,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               
               <div className="space-y-1">
                 {mockConversations.map((conversation) => (
-                  <button
+                  <div
                     key={conversation.id}
-                    className="w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors group"
+                    className="w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors group cursor-pointer"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-3 flex-1 min-w-0">
@@ -106,11 +106,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         </div>
                       </div>
                       
-                      <button className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-100 transition-all">
+                      <div className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-100 transition-all">
                         <MoreHorizontal className="h-3 w-3 text-gray-400" />
-                      </button>
+                      </div>
                     </div>
-                  </button>
+                  </div>
                 ))}
               </div>
             </div>

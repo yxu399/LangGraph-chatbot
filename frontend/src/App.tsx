@@ -1,6 +1,6 @@
 import { useUser } from '@clerk/clerk-react'
 import { Layout } from '@/components/layout/Layout'
-import { ChatPlaceholder } from '@/components/chat/ChatPlaceholder'
+import { ChatTest } from '@/components/chat/ChatTest'
 import { AuthPage } from '@/components/auth/AuthPage'
 
 function App() {
@@ -23,7 +23,7 @@ function App() {
   // Show main app if user is signed in
   return (
     <Layout>
-      <ChatPlaceholder />
+      <ChatTest />
     </Layout>
   )
 }
