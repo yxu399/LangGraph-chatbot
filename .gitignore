@@ -1,15 +1,8 @@
-cat >> .gitignore << EOF
-# Environment variables
-.env
-*.env
-.env.local
-.env.production
-
 # Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+*.so
 .Python
 build/
 develop-eggs/
@@ -27,13 +20,24 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual environments
+# Virtual Environment
+.venv/
 venv/
-env/
 ENV/
+env/
+
+# Environment Variables
+.env
+.env.local
+.env.production
+*.env
+
+# Database
+*.db
+*.sqlite3
 
 # IDE
-.vscode/
+.vscode/settings.json
 .idea/
 *.swp
 *.swo
@@ -41,4 +45,17 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
-EOF
+
+# Logs
+logs/
+*.log
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Temporary files
+test_db.py
+create_tables.py
+test_models.py
